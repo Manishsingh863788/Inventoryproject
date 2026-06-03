@@ -41,9 +41,9 @@ export async function login(
 
 
   // Fetch user
-  let user: { id: string; name: string; email: string; password: string; role: string } | null = null;
+  let user;
   try {
-    user = await prisma.user.findUnique({ where: { email } }) as typeof user;
+    user = await prisma.user.findUnique({ where: { email } });
   } catch (err) {
     console.error("[login] DB error:", err);
     return { errors: { general: ["Database error. Please try again."] } };
@@ -104,12 +104,12 @@ export async function register(
 
   const { name, email, password } = validated.data;
 
-  let existing: { id: string } | null = null;
+  let existing;
   try {
     existing = await prisma.user.findUnique({
       where: { email },
       select: { id: true },
-    }) as typeof existing;
+    });
   } catch (err) {
     console.error("[register] DB error:", err);
     return { errors: { general: ["Database error. Please try again."] } };
@@ -121,11 +121,11 @@ export async function register(
 
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  let newUser: { id: string; name: string; email: string; role: string } | null = null;
+  let newUser;
   try {
     newUser = await prisma.user.create({
       data: { name, email, password: hashedPassword, role: "USER" },
-    }) as typeof newUser;
+    });
   } catch (err) {
     console.error("[register] Create error:", err);
     return { errors: { general: ["Failed to create account. Please try again."] } };
