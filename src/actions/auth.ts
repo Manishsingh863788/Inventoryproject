@@ -38,7 +38,7 @@ export async function login(
 
   const { email, password } = validated.data;
 
-
+  console.log("[DEBUG] Login attempt for:", email);
 
   // Fetch user
   let user;
@@ -50,23 +50,29 @@ export async function login(
   }
 
   if (!user) {
+    console.log("[DEBUG] User not found:", email);
     return { errors: { general: ["Invalid email or password"] } };
   }
+
+  console.log("[DEBUG] User found:", user.email, "Role:", user.role);
 
   // Compare password hash
   let passwordMatch = false;
   try {
     passwordMatch = await bcrypt.compare(password, user.password);
+    console.log("[DEBUG] Password match:", passwordMatch);
   } catch (err) {
     console.error("[login] bcrypt error:", err);
     return { errors: { general: ["Authentication error. Please try again."] } };
   }
 
   if (!passwordMatch) {
+    console.log("[DEBUG] Password mismatch for:", email);
     return { errors: { general: ["Invalid email or password"] } };
   }
 
   const role = user.role as "ADMIN" | "USER";
+  console.log("[DEBUG] Creating session for:", email, "Role:", role);
 
   await createSession({
     userId: user.id,
@@ -74,6 +80,8 @@ export async function login(
     email: user.email,
     name: user.name,
   });
+
+  console.log("[DEBUG] Session created, returning success with redirect to:", role === "ADMIN" ? "/admin" : "/dashboard");
 
   const redirectPath = role === "ADMIN" ? "/admin" : "/dashboard";
   

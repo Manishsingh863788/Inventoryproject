@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
-import { Eye, EyeOff, UserPlus, AlertCircle } from "lucide-react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, UserPlus, AlertCircle, CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { register } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,14 @@ import { cn } from "@/lib/utils";
 export function RegisterForm() {
   const [state, action, pending] = useActionState(register, undefined);
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+
+  // Handle redirect after successful registration
+  useEffect(() => {
+    if (state?.success && state.redirectTo) {
+      router.push(state.redirectTo);
+    }
+  }, [state, router]);
 
   return (
     <Card className="shadow-xl border-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
