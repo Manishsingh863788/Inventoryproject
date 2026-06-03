@@ -20,7 +20,11 @@ export function LoginForm() {
   // Handle redirect after successful login
   useEffect(() => {
     if (state?.success && state.redirectTo) {
+      console.log("LOGIN SUCCESS - Redirecting to:", state.redirectTo);
       router.push(state.redirectTo);
+    }
+    if (state?.errors) {
+      console.log("LOGIN ERROR:", state.errors);
     }
   }, [state, router]);
 
